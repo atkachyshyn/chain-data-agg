@@ -43,4 +43,4 @@ jobs:
 
       - name: Check compilation
         run: |
-          make build
+          make build-local
