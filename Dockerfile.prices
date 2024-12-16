@@ -1,0 +1,12 @@
+FROM golang:1.23.3
+
+WORKDIR /app
+
+# Copy the application source code
+COPY . .
+
+# Build the aggregator binary
+RUN go build -o token-prices ./cmd/token-prices/main.go
+
+# Set the default command to run the aggregator binary
+CMD ["./token-prices"]
