@@ -18,18 +18,28 @@ jobs:
       with:
         credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
-    - name: Configure gcloud
-      run: gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
-
-    - name: Build Docker images
+    - name: Create .env from .env.example
       run: |
-        docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/aggregator:latest -f Dockerfile.aggregator .
-        docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/token-prices:latest -f Dockerfile.token-prices .
+        cp .env.example .env
+        sed -i 's/your-project-id/${{ secrets.TF_VAR_PROJECT_ID }}/g' .env
+        sed -i 's/your-region/${{ secrets.TF_VAR_REGION }}/g' .env
+        sed -i 's/your-bucket-name/${{ secrets.TF_VAR_BUCKET_NAME }}/g' .env
+        sed -i 's/your-clickhouse-host/${{ secrets.CLICKHOUSE_HOST }}/g' .env
+        sed -i 's/your-clickhouse-port/${{ secrets.CLICKHOUSE_PORT }}/g' .env
+        sed -i 's/your-clickhouse-user/${{ secrets.CLICKHOUSE_USER }}/g' .env
+        sed -i 's/your-clickhouse-password/${{ secrets.CLICKHOUSE_PASSWORD }}/g' .env
+        sed -i 's/your-coingecko-api-key/${{ secrets.COINGECKO_API_KEY }}/g' .env
+        sed -i 's/your-log-level/${{ secrets.LOG_LEVEL }}/g' .env
 
-    - name: Push Docker images to Google Container Registry
+    - name: Build Docker Images
       run: |
-        docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/aggregator:latest
-        docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/token-prices:latest
+        docker build -t gcr.io/${{ secrets.TF_VAR_PROJECT_ID }}/aggregator:latest -f Dockerfile.aggregator .
+        docker build -t gcr.io/${{ secrets.TF_VAR_PROJECT_ID }}/token-prices:latest -f Dockerfile.token-prices .
+
+    - name: Push Docker Images
+      run: |
+        docker push gcr.io/${{ secrets.TF_VAR_PROJECT_ID }}/aggregator:latest
+        docker push gcr.io/${{ secrets.TF_VAR_PROJECT_ID }}/token-prices:latest
 
     - name: Terraform Init
       run: |
@@ -38,15 +48,14 @@ jobs:
 
     - name: Terraform Apply
       env:
-        TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID }}
-        TF_VAR_region: "us-central1"
-        TF_VAR_bucket_name: "aggregator-data"
-        TF_VAR_clickhouse_host: ${{ secrets.CLICKHOUSE_HOST }}
-        TF_VAR_clickhouse_port: "9440"
-        TF_VAR_clickhouse_user: ${{ secrets.CLICKHOUSE_USER }}
-        TF_VAR_clickhouse_password: ${{ secrets.CLICKHOUSE_PASSWORD }}
-        TF_VAR_coingecko_api_key: ${{ secrets.COINGECKO_API_KEY }}
-        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+        TF_VAR_project_id: ${{ secrets.TF_VAR_PROJECT_ID }}
+        TF_VAR_region: ${{ secrets.TF_VAR_REGION }}
+        TF_VAR_bucket_name: ${{ secrets.TF_VAR_BUCKET_NAME }}
+        CLICKHOUSE_HOST: ${{ secrets.CLICKHOUSE_HOST }}
+        CLICKHOUSE_PORT: ${{ secrets.CLICKHOUSE_PORT }}
+        CLICKHOUSE_USER: ${{ secrets.CLICKHOUSE_USER }}
+        CLICKHOUSE_PASSWORD: ${{ secrets.CLICKHOUSE_PASSWORD }}
+        COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
       run: |
         cd deploy
         terraform apply -auto-approve
