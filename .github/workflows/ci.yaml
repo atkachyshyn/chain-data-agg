@@ -28,6 +28,19 @@ jobs:
           version: v1.62
           args: --timeout 5m
 
+      - name: Create .env from .env.example
+        run: |
+          cp .env.example .env
+          sed -i 's/your-project-id/${{ secrets.TF_VAR_PROJECT_ID }}/g' .env
+          sed -i 's/your-region/${{ secrets.TF_VAR_REGION }}/g' .env
+          sed -i 's/your-bucket-name/${{ secrets.TF_VAR_BUCKET_NAME }}/g' .env
+          sed -i 's/your-clickhouse-host/${{ secrets.CLICKHOUSE_HOST }}/g' .env
+          sed -i 's/your-clickhouse-port/${{ secrets.CLICKHOUSE_PORT }}/g' .env
+          sed -i 's/your-clickhouse-user/${{ secrets.CLICKHOUSE_USER }}/g' .env
+          sed -i 's/your-clickhouse-password/${{ secrets.CLICKHOUSE_PASSWORD }}/g' .env
+          sed -i 's/your-coingecko-api-key/${{ secrets.COINGECKO_API_KEY }}/g' .env
+          sed -i 's/your-log-level/${{ secrets.LOG_LEVEL }}/g' .env
+
       - name: Check compilation
         run: |
           make build
