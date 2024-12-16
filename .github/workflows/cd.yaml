@@ -34,7 +34,7 @@ jobs:
     - name: Build Docker Images
       run: |
         docker build -t gcr.io/${{ secrets.TF_VAR_PROJECT_ID }}/aggregator:latest -f Dockerfile.aggregator .
-        docker build -t gcr.io/${{ secrets.TF_VAR_PROJECT_ID }}/token-prices:latest -f Dockerfile.token-prices .
+        docker build -t gcr.io/${{ secrets.TF_VAR_PROJECT_ID }}/token-prices:latest -f Dockerfile.prices .
 
     - name: Push Docker Images
       run: |
