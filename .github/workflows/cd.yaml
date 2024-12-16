@@ -1,4 +1,4 @@
-name: CD Pipeline for Aggregator and Token Prices
+name: Blockchain Data Aggregator CD pipeline
 
 on:
   push:

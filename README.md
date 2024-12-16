@@ -11,7 +11,7 @@ This project provides two CLI applications:
 
 ## **Features**
 - **Dynamic GCP Bucket Naming**: Bucket names follow the pattern `<bucket-name>-<project-id>` to ensure uniqueness across projects.
-- **ETL Pipeline**: Supports full ETL processing (`extract`, `transform`, `load`) via a single command.
+- **Aggregator Pipeline**: Supports full ETL processing (`extract`, `transform`, `load`) via a single command.
 - **ClickHouse Schema Management**: Automates schema application to ClickHouse databases.
 - **Test Data Upload**: Facilitates uploading test data to a GCP bucket.
 - **Docker Integration**: Builds and pushes Docker images for deployment.
@@ -107,31 +107,16 @@ This will upload `sample_data/sample_data.csv` to the bucket `<bucket-name>-<pro
 
 ## **Running Locally**
 
-### **Run Aggregator Commands**
-Run specific aggregator commands with the appropriate parameters:
-- **Extract**:
-  ```bash
-  make run-aggregator COMMAND="extract" INPUT="input.csv" OUTPUT="extracted.csv"
-  ```
-- **Transform**:
-  ```bash
-  make run-aggregator COMMAND="transform" INPUT="extracted.csv" OUTPUT="transformed.csv" RATES="rates.json"
-  ```
-- **Load**:
-  ```bash
-  make run-aggregator COMMAND="load" INPUT="transformed.csv" DESTINATION="ClickHouse"
-  ```
-
 ### **Run Token Prices**
 Fetch token prices:
 ```bash
-make run-token-prices TOKENS="ETH,BTC" OUTPUT="prices.json"
+make run-token-prices TOKENS="sfl,matic,..." OUTPUT="prices.json"
 ```
 
-### **Run the Full ETL Pipeline**
-Run the full ETL pipeline sequentially:
+### **Run the Full Aggregator Pipeline**
+Run the full Aggregator pipeline sequentially:
 ```bash
-make run-etl \
+make run-aggregator \
     EXTRACT_INPUT="input.csv" \
     EXTRACT_OUTPUT="extracted" \
     TRANSFORM_OUTPUT="transformed" \
