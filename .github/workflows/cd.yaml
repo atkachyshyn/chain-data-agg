@@ -18,6 +18,9 @@ jobs:
       with:
         credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
+    - name: Authenticate Docker with GCP
+      run: gcloud auth configure-docker --quiet
+
     - name: Create .env from .env.example
       run: |
         cp .env.example .env
