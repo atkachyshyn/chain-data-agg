@@ -20,7 +20,7 @@ jobs:
 
     - name: Authenticate Docker with GCP
       run: |
-        echo ${{ secrets.GCP_SA_KEY }} | base64 --decode > key.json
+        echo ${{ secrets.GCP_SERVICE_ACCOUNT }} | base64 --decode > key.json
         gcloud auth activate-service-account --key-file=key.json
         gcloud auth configure-docker gcr.io
 
