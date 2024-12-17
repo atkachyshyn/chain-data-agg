@@ -18,11 +18,8 @@ jobs:
       with:
         credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
-    - name: Authenticate Docker with GCP
-      run: |
-        echo ${{ secrets.GCP_SERVICE_ACCOUNT }} | base64 --decode > key.json
-        gcloud auth activate-service-account --key-file=key.json
-        gcloud auth configure-docker gcr.io
+    - name: Configure Docker to use GCR
+      run: gcloud auth configure-docker gcr.io --quiet
 
     - name: Create .env from .env.example
       run: |
@@ -45,7 +42,9 @@ jobs:
     - name: Push Docker Images
       run: |
         docker push gcr.io/${{ secrets.TF_VAR_PROJECT_ID }}/aggregator:latest
+        docker push gcr.io/${{ secrets.TF_VAR_PROJECT_ID }}/aggregator:${{ github.sha }}
         docker push gcr.io/${{ secrets.TF_VAR_PROJECT_ID }}/token-prices:latest
+        docker push gcr.io/${{ secrets.TF_VAR_PROJECT_ID }}/token-prices:${{ github.sha }}
 
     - name: Terraform Init
       run: |
